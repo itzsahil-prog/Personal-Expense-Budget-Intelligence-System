@@ -1,0 +1,35 @@
+# ── R / RStudio ──────────────────────────────────────────────────────────────
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# ── SQLite database (auto-created at runtime — never commit data) ─────────────
+data/expenses.sqlite
+data/expenses.db
+
+# ── Generated reports (temp outputs, not source) ─────────────────────────────
+reports/
+
+# ── Saved model objects (large binaries) ─────────────────────────────────────
+models/
+
+# ── OS junk ───────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── R package library (if renv is added later) ────────────────────────────────
+renv/library/
+renv/staging/
+
+# ── Secrets / credentials ─────────────────────────────────────────────────────
+.env
+*.secret
+rsconnect/
+
+# ── Temp / cache ──────────────────────────────────────────────────────────────
+*.tmp
+*.log
+__pycache__/
