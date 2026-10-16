@@ -10,7 +10,8 @@
 
 required_packages <- c(
   "shiny",
-  "tidyverse",
+  "dplyr",
+  "readr",
   "ggplot2",
   "plotly",
   "DT",
@@ -79,10 +80,11 @@ check_packages <- function() {
 }
 
 # -----------------------------------------------------------------------------
-# When this file is sourced directly (e.g. Rscript requirements.R), run both
-# the installer and the verification check automatically.
+# When this file is run as a script (Rscript requirements.R), install + verify.
+# Do NOT run when sourced from app.R — shinyapps.io starts the app
+# non-interactively and must not call install.packages() at runtime.
 # -----------------------------------------------------------------------------
-if (!interactive()) {
+if (sys.nframe() == 0L) {
   install_packages()
   check_packages()
 }

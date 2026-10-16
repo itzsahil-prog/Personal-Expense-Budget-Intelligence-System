@@ -21,6 +21,16 @@
 # Dependencies: shiny, shinyjs, DT, plotly, ui_helpers.R, validation.R
 # =============================================================================
 
+# Domain constants (VALID_CATEGORIES, etc.) — app.R loads validation.R first;
+# this guard supports sourcing ui.R in isolation during development.
+if (!exists("VALID_CATEGORIES", inherits = FALSE)) {
+  val_path <- file.path("R", "validation.R")
+  if (!file.exists(val_path)) {
+    stop("validation.R must be loaded before ui.R.", call. = FALSE)
+  }
+  sys.source(val_path, envir = environment(), encoding = "UTF-8")
+}
+
 library(shiny)
 library(shinyjs)
 library(DT)

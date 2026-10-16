@@ -69,33 +69,35 @@ check_packages()
 #    server.R           server function (all reactives, observers, outputs)
 # ---------------------------------------------------------------------------
 
-# Layer 0
-source("R/validation.R")
+# Load every module into one environment. Shiny evaluates app.R inside a
+# private env; source(..., local = FALSE) would put constants in .GlobalEnv
+# while UI helpers close over the app env — causing "VALID_CATEGORIES not found".
+.app_env <- new.env(parent = globalenv())
 
-# Layer 1
-source("R/database.R")
+.app_modules <- c(
+  "validation.R",
+  "database.R",
+  "data_processing.R",
+  "analytics.R",
+  "budget.R",
+  "anomaly_detection.R",
+  "prediction.R",
+  "reporting.R",
+  "ui_helpers.R",
+  "ui.R",
+  "server.R"
+)
 
-# Layer 2
-source("R/data_processing.R")
-
-# Layer 3
-source("R/analytics.R")
-source("R/budget.R")
-source("R/anomaly_detection.R")
-source("R/prediction.R")
-
-# Layer 4
-source("R/reporting.R")
-
-# Layer 5
-source("R/ui_helpers.R")
-
-# Layer 6
-source("R/ui.R")
-source("R/server.R")
+for (mod in .app_modules) {
+  path <- file.path("R", mod)
+  if (!file.exists(path)) {
+    stop(sprintf("Missing module file: %s", path), call. = FALSE)
+  }
+  sys.source(path, envir = .app_env, encoding = "UTF-8")
+}
 
 
 # ---------------------------------------------------------------------------
 # 3. LAUNCH
 # ---------------------------------------------------------------------------
-shiny::shinyApp(ui = ui, server = server)
+shiny::shinyApp(ui = .app_env$ui, server = .app_env$server)

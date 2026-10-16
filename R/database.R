@@ -69,7 +69,19 @@ library(RSQLite)
 # =============================================================================
 
 # Default path — override by passing db_path explicitly (useful in tests).
-DEFAULT_DB_PATH <- file.path("data", "expenses.sqlite")
+# On shinyapps.io / Shiny Server the app bundle is read-only; SQLite must live
+# in a writable directory (tempdir() is per session on hosted platforms).
+.default_db_path <- function() {
+  hosted <- nzchar(Sys.getenv("SHINYAPP_APPLICATION_NAME", unset = "")) ||
+    nzchar(Sys.getenv("SHINY_SERVER_VERSION")) ||
+    identical(Sys.getenv("R_CONFIG_ACTIVE"), "shinyapps") ||
+    nzchar(Sys.getenv("CONNECT_SERVER"))
+  if (hosted) {
+    file.path(tempdir(), "expenses.sqlite")
+  } else {
+    file.path("data", "expenses.sqlite")
+  }
+}
 
 
 # =============================================================================
@@ -82,9 +94,9 @@ DEFAULT_DB_PATH <- file.path("data", "expenses.sqlite")
 #' Safe to call repeatedly; SQLite creates the file on first connect.
 #'
 #' @param db_path  Character path to the .sqlite file.
-#'                 Defaults to DEFAULT_DB_PATH.
+#'                 Defaults to a hosted-aware path (see .default_db_path()).
 #' @return         A DBI connection object.
-connect_database <- function(db_path = DEFAULT_DB_PATH) {
+connect_database <- function(db_path = .default_db_path()) {
   dir.create(dirname(db_path), showWarnings = FALSE, recursive = TRUE)
   DBI::dbConnect(RSQLite::SQLite(), dbname = db_path)
 }

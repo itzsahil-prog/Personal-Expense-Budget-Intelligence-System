@@ -70,7 +70,7 @@ source("requirements.R")
 install_packages()
 ```
 
-This installs all 13 required packages. It only installs packages that are not already present — it will not reinstall or downgrade existing packages.
+This installs all required packages. It only installs packages that are not already present — it will not reinstall or downgrade existing packages.
 
 ### 3. Load sample data (optional)
 
@@ -112,12 +112,36 @@ Or open `app.R` in RStudio and click **Run App**.
 
 ---
 
+## Deploy to shinyapps.io
+
+Hosted instances start the app **non-interactively**. Two common causes of **“The application failed to start (exit status 1)”** are:
+
+1. **Startup package check** — `check_packages()` requires every package in `requirements.R`. The bundle must include them (use a manifest; do not rely on the `tidyverse` meta-package if the code only loads `dplyr` / `readr`).
+2. **SQLite path** — the deployed app directory is not writable; the database is created under `tempdir()` when running on shinyapps.io (see `R/database.R`).
+
+From the project root in RStudio:
+
+```r
+install.packages(c("rsconnect", "shiny"))
+rsconnect::setAccountInfo(...)   # once, from your shinyapps.io token
+
+rsconnect::writeManifest(".")    # records dependencies from your code
+rsconnect::deployApp(".")
+```
+
+After changing `requirements.R` or adding packages, run `writeManifest(".")` again before redeploying.
+
+View startup errors on the shinyapps.io dashboard under **Logs** for the application instance.
+
+---
+
 ## Required Packages
 
 | Package | Purpose |
 |---------|---------|
 | shiny | Web application framework |
-| tidyverse | Data manipulation (dplyr, tidyr, readr, etc.) |
+| dplyr | Data manipulation |
+| readr | CSV parsing for import/export |
 | ggplot2 | Chart rendering (used internally by some helpers) |
 | plotly | Interactive charts |
 | DT | Interactive data tables |
