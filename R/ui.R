@@ -37,7 +37,7 @@ library(DT)
 library(plotly)
 
 CURRENCY_SYMBOL <- "\u20b9"
-APP_TITLE       <- "Expense Intelligence"
+APP_TITLE       <- "  FinX"
 
 # =============================================================================
 # HELPERS
